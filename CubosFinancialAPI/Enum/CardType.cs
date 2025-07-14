@@ -1,13 +1,11 @@
 ﻿using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace CubosFinancialAPI.Enum
 {
     public enum CardType
     {
-        [EnumMember(Value = "physical")]
-        physical,
-
-        [EnumMember(Value = "virtual")]
-        virtual_card
+        Virtual,
+        Physical
     }
 }

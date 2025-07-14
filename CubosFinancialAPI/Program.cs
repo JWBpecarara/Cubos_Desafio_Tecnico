@@ -10,6 +10,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.DataProtection;
 using CubosFinancialAPI.Infrastructure.Extensions;
+using System.Text.Json.Serialization;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,11 +19,24 @@ var builder = WebApplication.CreateBuilder(args);
 const string COMPLICEAPI_URL = "https://compliance-api.cubos.io";
 
 builder.Services.AddRefitClient<IComplianceApi>().ConfigureHttpClient(c => c.BaseAddress = new Uri(COMPLICEAPI_URL));
+
+
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.Converters.Add(
+            new JsonStringEnumConverter(JsonNamingPolicy.CamelCase)
+        );
+    });
+
+
+
 builder.Services.AddScoped<ComplianceService>();
 builder.Services.AddScoped<CriptografiaHelper>();
 builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<ICardRepository, CardRepository>();
+builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

@@ -6,7 +6,6 @@ namespace CubosFinancialAPI.DTO.Requests
     public class CreateCartaoRequestDto
     {
         [Required]
-        [RegularExpression(@"^(virtual|physical)$", ErrorMessage = "Tipo de cartão inválido.")]
         public CardType Type { get; set; }
 
         [Required]

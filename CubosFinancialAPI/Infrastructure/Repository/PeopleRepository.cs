@@ -4,36 +4,30 @@ using CubosFinancialAPI.Infrastructure.Repository.Interface;
 using CubosFinancialAPI.Model;
 using Microsoft.EntityFrameworkCore;
 
-namespace CubosFinancialAPI.Infrastructure.Repository
+namespace CubosFinancialAPI.Infrastructure.Repository;
+
+public class PeopleRepository(ConnectionContext context) : IPeopleRepository
 {
-    public class PeopleRepository : IPeopleRepository
+    private readonly ConnectionContext _context = context;
+
+    public PostPeopleResponseDto Add(People People)
     {
-        private readonly ConnectionContext _context;
+        _context.Peoples.Add(People);
+        _context.SaveChanges();
 
-        public PeopleRepository(ConnectionContext context)
+        return new PostPeopleResponseDto
         {
-            _context = context;
-        }
+            Id = People.Id,
+            Name = People.Name,
+            Document = People.Document,
+            CreatedAt = People.CreatedAt,
+            UpdatedAt = People.UpdatedAt
+        };
+    }
 
-        public PostPeopleResponseDto Add(People People)
-        {
-            _context.Peoples.Add(People);
-            _context.SaveChanges();
-
-            return new PostPeopleResponseDto
-            {
-                Id = People.Id,
-                Name = People.Name,
-                Document = People.Document,
-                CreatedAt = People.CreatedAt,
-                UpdatedAt = People.UpdatedAt
-            };
-        }
-
-        public async Task<People?> Login(LoginRequestDto People)
-        {
-            return await _context.Peoples.
-                FirstOrDefaultAsync(u => u.Document == People.Document && u.Password == People.Password); 
-        }
+    public async Task<People?> LoginAsync(LoginRequestDto People)
+    {
+        return await _context.Peoples.
+            FirstOrDefaultAsync(u => u.Document == People.Document && u.Password == People.Password);
     }
 }

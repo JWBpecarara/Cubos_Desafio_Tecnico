@@ -1,12 +1,11 @@
 ﻿using CubosFinancialAPI.DTO.Responses;
 using CubosFinancialAPI.Model;
 
-namespace CubosFinancialAPI.Infrastructure.Repository.Interface
+namespace CubosFinancialAPI.Infrastructure.Repository.Interface;
+
+public interface IAccountRepository
 {
-    public interface IAccountRepository
-    {
-        AccountResponseDto Add(Account Account);
-        Task<bool> AccountExists(string AccountNumber);
-        Task<List<AccountResponseDto>> GetAllAccountByPeolpe(Guid userId);
-    }
+    AccountResponseDto Add(Account Account);
+    Task<bool> AccountExistsAsync(string AccountNumber);
+    Task<List<AccountResponseDto>> GetAllAccountByPeolpeAsync(Guid userId);
 }

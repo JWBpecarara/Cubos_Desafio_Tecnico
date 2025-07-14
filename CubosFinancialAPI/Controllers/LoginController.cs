@@ -1,42 +1,30 @@
 ﻿using CubosFinancialAPI.DTO.Requests;
-using CubosFinancialAPI.DTO.Responses;
 using CubosFinancialAPI.Infrastructure;
-using CubosFinancialAPI.Infrastructure.Intregrations.Services;
 using CubosFinancialAPI.Infrastructure.Repository.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
-namespace CubosFinancialAPI.Controllers
+namespace CubosFinancialAPI.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class LoginController(CriptografiaHelper criptografiaHelper, TokenProvider tokenProvider, IPeopleRepository PeopleRepository) : ControllerBase
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class LoginController : ControllerBase
+    private readonly IPeopleRepository _peopleRepository = PeopleRepository;
+    private readonly CriptografiaHelper _criptografiaHelper = criptografiaHelper;
+    private readonly TokenProvider _tokenProvider = tokenProvider;
+
+    [HttpPost]
+    public async Task<IActionResult> Login ([FromBody] LoginRequestDto dto)
     {
-        private readonly IPeopleRepository _peopleRepository;
-        private readonly CriptografiaHelper _criptografiaHelper;
-        private readonly TokenProvider _tokenProvider;
+        dto.Password = _criptografiaHelper.ENCODE_HMAC_SHA256_base64(dto.Password);
 
+        Model.People? people = await _peopleRepository.LoginAsync(dto);
 
-        public LoginController(CriptografiaHelper criptografiaHelper, TokenProvider tokenProvider,IPeopleRepository PeopleRepository)
-        {
-            _peopleRepository = PeopleRepository;
-            _criptografiaHelper = criptografiaHelper;
-            _tokenProvider = tokenProvider;
-        }
+        if (people == null)
+            return Unauthorized("Credenciais inválidas.");
 
-        [HttpPost]
-        public async Task<IActionResult> Login ([FromBody] LoginRequestDto dto)
-        {
-            dto.Password = _criptografiaHelper.ENCODE_HMAC_SHA256_base64(dto.Password);
+        var tokenJwt = _tokenProvider.Create(people);
 
-            Model.People? people = await _peopleRepository.Login(dto);
-
-            if (people == null)
-                return Unauthorized("Credenciais inválidas.");
-
-            var token = _tokenProvider.Create(people);
-
-            return Ok(token);
-        }
+        return Ok(new { token = tokenJwt });
     }
 }

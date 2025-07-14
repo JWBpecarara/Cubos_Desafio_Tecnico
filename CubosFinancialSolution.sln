@@ -7,6 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CubosFinancialAPI", "CubosF
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A714A864-16F0-4DD1-8E89-50005D7494DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCubosFinancialApi", "..\TestCubosFinancialApi\TestCubosFinancialApi.csproj", "{D45276B2-C38A-44B1-B8CC-2428E37575BA}"
+	ProjectSection(ProjectDependencies) = postProject
+		{80226833-F155-44FD-B57A-A61899780225} = {80226833-F155-44FD-B57A-A61899780225}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +26,10 @@ Global
 		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D45276B2-C38A-44B1-B8CC-2428E37575BA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D45276B2-C38A-44B1-B8CC-2428E37575BA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D45276B2-C38A-44B1-B8CC-2428E37575BA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D45276B2-C38A-44B1-B8CC-2428E37575BA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

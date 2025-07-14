@@ -3,46 +3,39 @@ using CubosFinancialAPI.DTO.Responses;
 using CubosFinancialAPI.Infrastructure;
 using CubosFinancialAPI.Infrastructure.Intregrations.Services;
 using CubosFinancialAPI.Infrastructure.Repository.Interface;
+using CubosFinancialAPI.Model;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.RegularExpressions;
 
-namespace CubosFinancialAPI.Controllers
+namespace CubosFinancialAPI.Controllers;
+
+[Route("[controller]")]
+[ApiController]
+public class PeopleController(ComplianceService complianceService, CriptografiaHelper criptografiaHelper, IPeopleRepository PeopleRepository) : ControllerBase
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class PeopleController : ControllerBase
+    private readonly ComplianceService _complianceService = complianceService;
+    private readonly CriptografiaHelper _criptografiaHelper = criptografiaHelper;
+    private readonly IPeopleRepository _peopleRepository = PeopleRepository;
+
+    [HttpPost]
+    public async Task<IActionResult> Create(PostPeopleRequesteDto dto)
     {
-        private readonly ComplianceService _complianceService;
-        private readonly CriptografiaHelper _criptografiaHelper;
-        private readonly IPeopleRepository _peopleRepository;
+        bool isValid = await _complianceService.ValidateCpfOrCnpjAsync(dto.Document);
 
-        public PeopleController(ComplianceService complianceService, CriptografiaHelper criptografiaHelper, IPeopleRepository PeopleRepository)
+        if (!isValid)
+            return BadRequest("O documento informado não é um CPF ou CNPJ válido");
+
+        People peple = new()
         {
-            _complianceService = complianceService;
-            _criptografiaHelper = criptografiaHelper;
-            _peopleRepository = PeopleRepository;
-        }
+            Name = dto.Name,
+            Document = Regex.Replace(dto.Document, @"\D", ""),
+            Password = _criptografiaHelper.ENCODE_HMAC_SHA256_base64(dto.Password),
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow
+        };
 
-        [HttpPost]
-        public async Task<IActionResult> Create(PostPeopleRequesteDto dto)
-        {
-            var isValid = await _complianceService.ValidateCpfOrCnpjAsync(dto.Document);
+        PostPeopleResponseDto result = _peopleRepository.Add(peple);
 
-            if(isValid == false)
-                return BadRequest("O documento informado não é um CPF ou CNPJ válido");
-
-            var People = new Model.People
-            {
-                Name = dto.Name,
-                Document = Regex.Replace(dto.Document, @"\D", ""),
-                Password = _criptografiaHelper.ENCODE_HMAC_SHA256_base64(dto.Password),
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
-            };
-
-            PostPeopleResponseDto result = _peopleRepository.Add(People);
-
-            return Ok(result);
-        }
+        return Ok(result);
     }
 }

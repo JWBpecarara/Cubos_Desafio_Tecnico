@@ -2,52 +2,43 @@
 using CubosFinancialAPI.Infrastructure.Intregrations.Models.Requests;
 using System.Text.RegularExpressions;
 
-namespace CubosFinancialAPI.Infrastructure.Intregrations.Services
+namespace CubosFinancialAPI.Infrastructure.Intregrations.Services;
+
+public interface IComplianceService
 {
-    public class ComplianceService
+    Task<bool> ValidateCpfOrCnpjAsync(string documento);
+}
+
+public class ComplianceService(IComplianceApi complianceApi) : IComplianceService
+{
+    private readonly IComplianceApi _complianceApi = complianceApi;
+
+    public async Task<bool> ValidateCpfOrCnpjAsync(string documento)
     {
-        private readonly IComplianceApi _complianceApi;
+         // Obter o código de autorização
+         var authCodeResult = await _complianceApi.GetAuthCode(new Authentication());
+         var authCode = authCodeResult.Data.AuthCode;
 
-        public ComplianceService(IComplianceApi complianceApi)
-        {
-            _complianceApi = complianceApi;
-        }
+         // Obter o token usando o código de autorização
+         var tokenResult = await _complianceApi.GetToken(new AuthenticationCode { AuthCode = authCode });
+         var accessToken = tokenResult.Data.AccessToken;
 
-        public async Task<bool> ValidateCpfOrCnpjAsync(string documento)
-        {
-            try
-            {
-                // Obter o código de autorização
-                var authCodeResult = await _complianceApi.GetAuthCode(new Authentication());
-                var authCode = authCodeResult.Data.AuthCode;
+         // Sanitizar o documento (remover caracteres não numéricos)
+         var documentoSanitizado = Regex.Replace(documento, @"\D", "");
 
-                // Obter o token usando o código de autorização
-                var tokenResult = await _complianceApi.GetToken(new AuthenticationCode { AuthCode = authCode });
-                var accessToken = tokenResult.Data.AccessToken;
+         var documentRequest = new DocumentNumber { Document = documentoSanitizado };
 
-                // Sanitizar o documento (remover caracteres não numéricos)
-                var documentoSanitizado = Regex.Replace(documento, @"\D", "");
+         if (documentoSanitizado.Length == 11)
+         {
+             var cpfValidation = await _complianceApi.ValidateCpfAsync(documentRequest, accessToken); 
+             return cpfValidation.Success;
+         }
+         if (documentoSanitizado.Length == 14)
+         {
+             var cnpjValidation = await _complianceApi.ValidateCnpjAsync(documentRequest, accessToken);
+             return cnpjValidation.Success;
+         }
 
-                var documentRequest = new DocumentNumber { Document = documentoSanitizado };
-
-                if (documentoSanitizado.Length == 11)
-                {
-                    var cpfValidation = await _complianceApi.Validatecpf(documentRequest, accessToken); 
-                    return cpfValidation.Success;
-                }
-                else if (documentoSanitizado.Length == 14)
-                {
-                    var cnpjValidation = await _complianceApi.ValidateCnpj(documentRequest, accessToken);
-                    return cnpjValidation.Success;
-                }
-
-                throw new ArgumentException("O documento informado não é um CPF ou CNPJ válido.");
-            }
-            catch (Exception ex)
-            {
-                throw new Exception("Erro ao validar documento com fluxo de autenticação.", ex);
-            }
-        }
-
+         throw new ArgumentException("O documento informado não é um CPF ou CNPJ válido.");
     }
 }
