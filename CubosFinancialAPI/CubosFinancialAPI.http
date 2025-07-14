@@ -1,0 +1,6 @@
+@CubosFinancialAPI_HostAddress = http://localhost:5014
+
+GET {{CubosFinancialAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

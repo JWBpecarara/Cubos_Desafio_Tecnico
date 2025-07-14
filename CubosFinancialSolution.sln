@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35122.118
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CubosFinancialAPI", "CubosFinancialAPI\CubosFinancialAPI.csproj", "{80226833-F155-44FD-B57A-A61899780225}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{A714A864-16F0-4DD1-8E89-50005D7494DD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{80226833-F155-44FD-B57A-A61899780225}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{80226833-F155-44FD-B57A-A61899780225}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{80226833-F155-44FD-B57A-A61899780225}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{80226833-F155-44FD-B57A-A61899780225}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A714A864-16F0-4DD1-8E89-50005D7494DD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {55E0F5E4-836A-48BF-91DC-9485FE813116}
+	EndGlobalSection
+EndGlobal

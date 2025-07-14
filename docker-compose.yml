@@ -1,0 +1,24 @@
+version: '3.4'
+
+services:
+  cubosfinancialapi:
+    image: ${DOCKER_REGISTRY-}cubosfinancialapi
+    container_name: CubosFinancial.api
+    build:
+      context: .
+      dockerfile: CubosFinancialAPI/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+  
+  CubosFinancial.database:
+    image: postgres:latest
+    container_name: CubosFinancial.database
+    environment:
+      - POSTGRES_DB=CubosFinancial
+      - POSTGRES_USER=admin 
+      - POSTGRES_PASSWORD=admin 
+    volumes:
+      - ./.containers/cubosfinancial-db:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
