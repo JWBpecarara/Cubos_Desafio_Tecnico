@@ -4,10 +4,14 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using System.Text;
 
-
 namespace CubosFinancialAPI.Infrastructure;
 
-public sealed class TokenProvider(IConfiguration configuration)
+public interface ITokenProvider
+{
+    string Create(People people);
+}
+
+public sealed class TokenProvider(IConfiguration configuration) : ITokenProvider
 {
     public string Create(People people)
     {

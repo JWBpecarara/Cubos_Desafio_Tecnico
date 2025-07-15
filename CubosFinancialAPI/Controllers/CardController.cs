@@ -11,7 +11,7 @@ namespace CubosFinancialAPI.Controllers;
 public class CardsController(IAccountRepository accountRepository, ICardRepository cardRepository) : ControllerBase
 {
     private readonly ICardRepository _cardRepository = cardRepository;
-
+    
     [HttpGet]
     public async Task<IActionResult> GetAllCardsByPeople([FromQuery] int items = 10, [FromQuery] int Page = 1)
     {

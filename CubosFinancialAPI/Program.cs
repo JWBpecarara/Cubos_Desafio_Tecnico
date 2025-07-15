@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.DataProtection;
 using CubosFinancialAPI.Infrastructure.Extensions;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using CubosFinancialAPI.Application.Services.Interfaces;
+using CubosFinancialAPI.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,12 +33,15 @@ builder.Services.AddControllers()
 
 
 
-builder.Services.AddScoped<ComplianceService>();
-builder.Services.AddScoped<CriptografiaHelper>();
+builder.Services.AddScoped<ICardRepository, CardRepository>();
 builder.Services.AddScoped<IPeopleRepository, PeopleRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
-builder.Services.AddScoped<ICardRepository, CardRepository>();
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ITransactionService, TransactionService>();
+builder.Services.AddScoped<ICriptografiaHelper, CriptografiaHelper>();
+builder.Services.AddSingleton<ITokenProvider, TokenProvider>();
+builder.Services.AddScoped<ComplianceService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -44,8 +49,6 @@ builder.Services.AddSwaggerGenWithAuth();
 
 builder.Services.AddDbContext<ConnectionContext>(
     options => options.UseNpgsql(builder.Configuration.GetConnectionString("Database")));
-
-builder.Services.AddSingleton<TokenProvider>();
 
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

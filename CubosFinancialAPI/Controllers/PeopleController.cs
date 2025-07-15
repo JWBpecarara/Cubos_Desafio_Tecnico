@@ -11,10 +11,10 @@ namespace CubosFinancialAPI.Controllers;
 
 [Route("[controller]")]
 [ApiController]
-public class PeopleController(ComplianceService complianceService, CriptografiaHelper criptografiaHelper, IPeopleRepository PeopleRepository) : ControllerBase
+public class PeopleController(ComplianceService complianceService, ICriptografiaHelper criptografiaHelper, IPeopleRepository PeopleRepository) : ControllerBase
 {
     private readonly ComplianceService _complianceService = complianceService;
-    private readonly CriptografiaHelper _criptografiaHelper = criptografiaHelper;
+    private readonly ICriptografiaHelper _criptografiaHelper = criptografiaHelper;
     private readonly IPeopleRepository _peopleRepository = PeopleRepository;
 
     [HttpPost]

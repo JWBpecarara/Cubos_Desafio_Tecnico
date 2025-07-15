@@ -3,7 +3,12 @@ using System.Text;
 
 namespace CubosFinancialAPI.Infrastructure;
 
-public class CriptografiaHelper(IConfiguration configuration)
+public interface ICriptografiaHelper
+{
+    string ENCODE_HMAC_SHA256_base64(string text);
+}
+
+public class CriptografiaHelper(IConfiguration configuration) : ICriptografiaHelper
 {
     private readonly IConfiguration _Configuration = configuration;
 

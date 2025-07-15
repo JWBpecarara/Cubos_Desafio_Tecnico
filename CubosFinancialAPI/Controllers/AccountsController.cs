@@ -5,24 +5,19 @@ using CubosFinancialAPI.Model;
 using CubosFinancialAPI.Infrastructure.Repository.Interface;
 using Microsoft.AspNetCore.Authorization;
 using CubosFinancialAPI.Enum;
+using CubosFinancialAPI.Application.Services.Interfaces;
 
 namespace CubosFinancialAPI.Controllers;
 
 [Authorize]
 [Route("[controller]")]
 [ApiController]
-public class AccountsController : ControllerBase
+public class AccountsController(ITransactionService transactionService, IAccountRepository accountRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository) : ControllerBase
 {
-    private readonly IAccountRepository _accountRepository;
-    private readonly ICardRepository _cardRepository;
-    private readonly ITransactionRepository _transactionRepository;
-
-    public AccountsController(IAccountRepository accountRepository, ICardRepository cardRepository, ITransactionRepository transactionRepository)
-    {
-        _accountRepository = accountRepository;
-        _cardRepository = cardRepository;
-        _transactionRepository = transactionRepository;
-    }
+    private readonly IAccountRepository _accountRepository = accountRepository;
+    private readonly ICardRepository _cardRepository = cardRepository;
+    private readonly ITransactionService _transactionService = transactionService;
+    private readonly ITransactionRepository _transactionRepository = transactionRepository;
 
     [HttpPost]
     public async Task<IActionResult> CreateAccount(AccountRequestDto request)
@@ -94,26 +89,9 @@ public class AccountsController : ControllerBase
     [HttpPost("{accountId}/cards/transactions")]
     public async Task<IActionResult> CreateTransaction(Guid accountId, [FromBody] CreateTransactionRequestDto request)
     {
-        var tipo = request.Value < 0 ? TransactionType.Debit : TransactionType.Credit;
+        TransactionResponseDto? result = await _transactionService.CreateTransactionAsync(accountId, request);
 
-        if (tipo == TransactionType.Debit)
-        {
-            var balance = await _transactionRepository.GetBalanceByAccountIdAsync(accountId);
-            if (balance + request.Value < 0) // valor é negativo
-            {
-                return BadRequest("Saldo insuficiente para a transação.");
-            }
-        }
-
-        var Transaction = new Model.Transaction
-        {
-            AccountId = accountId,
-            Type = tipo,
-            Value = request.Value,
-            Description = request.Description
-        };
-
-        TransactionResponseDto result = _transactionRepository.Add(Transaction);
+        if (result is null) return BadRequest("Saldo insuficiente para a transação.");
 
         return Ok(result);
     }
@@ -203,8 +181,6 @@ public class AccountsController : ControllerBase
 
         return Ok(resultDestination);
     }
-
-
 
     [HttpGet("{accountId}/transactions")]
     public async Task<IActionResult> GetAlltransactionsByAccount(Guid accountId, [FromQuery] int items = 10, [FromQuery] int Page = 1, [FromQuery] string type = "")
